@@ -5,6 +5,10 @@ import { loginResponseDto } from './dto/login.dto';
 import { User } from './user.entity';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import {
+  FindUserByIdRequestDto,
+  FindUserByIdResponseDto,
+} from './dto/findById.dto';
 
 @Injectable()
 export class UserService {
@@ -12,6 +16,26 @@ export class UserService {
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly configService: ConfigService,
   ) {}
+
+  async findUserById(
+    param: FindUserByIdRequestDto,
+  ): Promise<FindUserByIdResponseDto> {
+    try {
+      const user = await this.users.findOneOrFail({ id: param.id });
+
+      return {
+        statusCode: 200,
+        message: '유저 조회에 성공하였습니다.',
+        user,
+      };
+    } catch (error) {
+      return {
+        statusCode: 400,
+        message: '유저 조회에 실패하였습니다.',
+        error: 'User not found',
+      };
+    }
+  }
 
   async loginOrSignUp(params): Promise<loginResponseDto> {
     try {

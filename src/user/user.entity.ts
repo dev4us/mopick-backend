@@ -1,8 +1,10 @@
 import { IsDate, IsEmail, IsString } from 'class-validator';
+import { Subscribed } from 'src/subscribed/subscribed.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -27,6 +29,9 @@ export class User {
   @Column()
   @IsString()
   profileImage: string;
+
+  @OneToMany((type) => Subscribed, (subscribed) => subscribed.owner)
+  subscribedList: Subscribed[];
 
   @CreateDateColumn()
   @IsDate()

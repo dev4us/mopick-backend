@@ -6,6 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './user/user.entity';
 import { UserModule } from './user/user.module';
+import { SubscribedModule } from './subscribed/subscribed.module';
+import { Subscribed } from './subscribed/subscribed.entity';
 
 @Module({
   imports: [
@@ -32,9 +34,10 @@ import { UserModule } from './user/user.module';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: true,
-      entities: [User],
+      entities: [User, Subscribed],
     }),
     UserModule,
+    SubscribedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
