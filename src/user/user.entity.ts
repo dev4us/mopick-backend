@@ -4,7 +4,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -29,9 +30,6 @@ export class User {
   @Column()
   @IsString()
   profileImage: string;
-
-  @OneToMany((type) => Subscribed, (subscribed) => subscribed.owner)
-  subscribedList: Subscribed[];
 
   @CreateDateColumn()
   @IsDate()

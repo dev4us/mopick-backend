@@ -4,6 +4,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   RelationId,
@@ -31,11 +33,9 @@ export class Subscribed {
   @IsString()
   serviceOn: string;
 
-  @ManyToOne((type) => User, (user) => user.subscribedList)
-  owner: User;
-
-  @RelationId((subscribed: Subscribed) => subscribed.owner)
-  userId: number;
+  @ManyToMany((type) => User, { eager: true })
+  @JoinTable()
+  followers: User[];
 
   @CreateDateColumn()
   @IsDate()

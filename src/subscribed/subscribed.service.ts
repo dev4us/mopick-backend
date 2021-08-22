@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { commonResponseDto } from 'src/common/common.dto';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import {
   getRssAddressResponseDto,
   parsingRSSResponseDto,
   registerRequestDto,
 } from './dto/register.dto';
+
 import { Subscribed } from './subscribed.entity';
+import { User } from 'src/user/user.entity';
 
 import * as request from 'request-promise';
 import * as cheerio from 'cheerio';
@@ -19,6 +21,8 @@ export class SubscribedService {
   constructor(
     @InjectRepository(Subscribed)
     private readonly subscribeds: Repository<Subscribed>,
+    @InjectRepository(User)
+    private readonly users: Repository<User>,
   ) {}
 
   async getRssAddress(url: string): Promise<getRssAddressResponseDto> {
@@ -221,22 +225,42 @@ export class SubscribedService {
 
       if (rssData.statusCode === 200) {
         // 중복 확인
-        const existFeedUrl = await this.subscribeds.findOne({
-          owner: params.loggedUser,
-          feedUrl: rssData.data.feedUrl,
-        });
+        const existFeedUrl = await getConnection()
+          .getRepository(Subscribed)
+          .createQueryBuilder('subscribed')
+          .leftJoinAndSelect('subscribed.followers', 'follower')
+          .where('follower.id in (:id) AND subscribed.siteUrl = :siteUrl', {
+            id: params.loggedUser.id,
+            siteUrl: rssData.data.siteUrl,
+          })
+          .getRawMany();
 
-        if (existFeedUrl) {
+        if (existFeedUrl && existFeedUrl.length > 0) {
           return {
             statusCode: 409,
-            message: '이미 구독 중인 주소입니다!',
+            message: '이미 구독 중인 주소입니다!!',
             error: 'This address is already subscribed',
           };
         } else {
-          await this.subscribeds.save({
-            ...rssData.data,
-            owner: params.loggedUser,
+          const alreadyRegistUrl = await this.subscribeds.findOne({
+            siteUrl: rssData.data.siteUrl,
           });
+
+          if (alreadyRegistUrl) {
+            // 기존에 존재했다면 구독 목록에 추가한다.
+            await this.subscribeds.save({
+              ...alreadyRegistUrl,
+              followers: alreadyRegistUrl.followers.concat(params.loggedUser),
+            });
+          } else {
+            // 기존에 없었다면 새로 추가한다.
+            await this.subscribeds.save(
+              this.subscribeds.create({
+                ...rssData.data,
+                followers: [params.loggedUser],
+              }),
+            );
+          }
         }
 
         return rssData;
@@ -251,7 +275,5 @@ export class SubscribedService {
         error: "Couldn't regist content's address",
       };
     }
-
-    //const existRegist = await this.subscribeds.findOne({});
   }
 }
