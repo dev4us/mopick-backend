@@ -32,9 +32,8 @@ export class Subscribed {
   @Column({ nullable: true })
   profileImageUrl: string | null;
 
-  @Column()
-  @IsString()
-  serviceOn: string;
+  @Column({ nullable: true })
+  serviceOn: string | null;
 
   @ManyToMany((type) => User, { eager: true })
   @JoinTable()

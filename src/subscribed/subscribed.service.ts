@@ -58,7 +58,7 @@ export class SubscribedService {
     return res;
   }
 
-  async parsingRSS(url: string): Promise<parsingRSSResponseDto> {
+  async parsingRSS({ url, serviceOn }): Promise<parsingRSSResponseDto> {
     try {
       const parser = new rssReader();
       const rssData = await parser.parseURL(url);
@@ -69,7 +69,7 @@ export class SubscribedService {
         data: {
           title: rssData.title,
           siteUrl: rssData.link,
-          serviceOn: rssData.generator,
+          serviceOn,
           feedUrl: url,
           profileImageUrl: rssData.image?.url || null,
         },
@@ -94,7 +94,10 @@ export class SubscribedService {
   async register(params: registerRequestDto): Promise<commonResponseDto> {
     try {
       // S0. RSS 파싱을 우선적으로 시도함.
-      const parsingRSS = await this.parsingRSS(params.url);
+      const parsingRSS = await this.parsingRSS({
+        url: params.url,
+        serviceOn: params.serviceOn,
+      });
       let rssData;
 
       if (parsingRSS && parsingRSS.statusCode == 200) {
@@ -120,6 +123,7 @@ export class SubscribedService {
             return (rssData = await this.register({
               url: parsedFeedUrl.feedUrl,
               loggedUser: params.loggedUser,
+              serviceOn: 'brunch',
             }));
           } else {
             throw new Error();
@@ -136,6 +140,7 @@ export class SubscribedService {
           return (rssData = await this.register({
             url: `https://${tistoryUniqueId}.tistory.com/rss`,
             loggedUser: params.loggedUser,
+            serviceOn: 'tistory',
           }));
         } else if (
           params.url.toLowerCase().includes('blog.naver.com') &&
@@ -156,6 +161,7 @@ export class SubscribedService {
               return (rssData = await this.register({
                 url: parsedFeedUrl.feedUrl,
                 loggedUser: params.loggedUser,
+                serviceOn: 'naver',
               }));
             } else {
               throw new Error();
@@ -179,6 +185,7 @@ export class SubscribedService {
             return (rssData = await this.register({
               url: parsedFeedUrl.feedUrl,
               loggedUser: params.loggedUser,
+              serviceOn: 'naver',
             }));
           } else {
             throw new Error();
@@ -201,6 +208,7 @@ export class SubscribedService {
             return (rssData = await this.register({
               url: parsedFeedUrl.feedUrl,
               loggedUser: params.loggedUser,
+              serviceOn: 'naver',
             }));
           } else {
             throw new Error();
@@ -225,6 +233,7 @@ export class SubscribedService {
             return (rssData = await this.register({
               url: parsedFeedUrl.feedUrl,
               loggedUser: params.loggedUser,
+              serviceOn: 'medium',
             }));
           } else {
             throw new Error();
@@ -238,6 +247,7 @@ export class SubscribedService {
             return (rssData = await this.register({
               url: parsedFeedUrl.feedUrl,
               loggedUser: params.loggedUser,
+              serviceOn: null,
             }));
           } else {
             throw new Error();

@@ -5,6 +5,7 @@ export class registerRequestDto {
   url: string;
   //loggedUserId: number;
   loggedUser: User;
+  serviceOn: string | null;
 }
 
 export class getRssAddressResponseDto extends commonResponseDto {
@@ -19,7 +20,7 @@ export class parsingRSSResponseDto extends commonResponseDto {
   data?: {
     title: string;
     siteUrl: string;
-    serviceOn?: string;
+    serviceOn: string | null;
     feedUrl: string;
     profileImageUrl: string | null;
   };

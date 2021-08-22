@@ -19,6 +19,7 @@ export class SubscribedController {
     return this.subscribedService.register({
       url: params.url,
       loggedUser,
+      serviceOn: null,
     });
   }
 }
