@@ -8,6 +8,8 @@ import { User } from './user/user.entity';
 import { UserModule } from './user/user.module';
 import { SubscribedModule } from './subscribed/subscribed.module';
 import { Subscribed } from './subscribed/subscribed.entity';
+import { PostModule } from './post/post.module';
+import { Post } from './post/post.entity';
 
 @Module({
   imports: [
@@ -34,10 +36,11 @@ import { Subscribed } from './subscribed/subscribed.entity';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: true,
-      entities: [User, Subscribed],
+      entities: [User, Subscribed, Post],
     }),
     UserModule,
     SubscribedModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,5 @@
 import { IsDate, IsString } from 'class-validator';
+import { Post } from 'src/post/post.entity';
 import { User } from 'src/user/user.entity';
 import {
   Column,
@@ -7,6 +8,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
   UpdateDateColumn,
@@ -34,6 +36,9 @@ export class Subscribed {
 
   @Column({ nullable: true })
   serviceOn: string | null;
+
+  @OneToMany((type) => Post, (post) => post.subscribed, { eager: true })
+  posts: Post[];
 
   @ManyToMany((type) => User, { eager: true })
   @JoinTable()
