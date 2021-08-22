@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { commonResponseDto } from 'src/common/common.dto';
 import { getConnection, Repository } from 'typeorm';
 import {
+  getProfileAddressResponseDto,
   getRssAddressResponseDto,
   parsingRSSResponseDto,
   registerRequestDto,
@@ -29,9 +30,16 @@ export class SubscribedService {
     const res = await request(url).then(async (html) => {
       const $ = await cheerio.load(html);
       const isAbleSubscribe = $("link[type*='application/rss']").length;
+      const isAbleSubscribeXml = $("link[type*='application/rss+xml']").length;
 
-      if (isAbleSubscribe > 0) {
-        const feedUrl = $("link[type*='application/rss']")[0].attribs.href;
+      if (isAbleSubscribe > 0 || isAbleSubscribeXml > 0) {
+        let feedUrl;
+
+        if (isAbleSubscribe > 0) {
+          feedUrl = $("link[type*='application/rss']")[0].attribs.href;
+        } else {
+          feedUrl = $("link[type*='application/rss+xml']")[0].attribs.href;
+        }
 
         return {
           statusCode: 200,
@@ -63,6 +71,7 @@ export class SubscribedService {
           siteUrl: rssData.link,
           serviceOn: rssData.generator,
           feedUrl: url,
+          profileImageUrl: rssData.image?.url || null,
         },
       };
     } catch (error) {
@@ -210,6 +219,19 @@ export class SubscribedService {
           parsedFeedUrl = await this.getRssAddress(
             `https://medium.com/${mediumUniqueId}`,
           );
+
+          if (parsedFeedUrl.statusCode === 200) {
+            // S6-3. 파싱한 RSS 주소를 통하여 재시도
+            return (rssData = await this.register({
+              url: parsedFeedUrl.feedUrl,
+              loggedUser: params.loggedUser,
+            }));
+          } else {
+            throw new Error();
+          }
+        } else {
+          // 위에 속하지 않은 경우 html파싱을 시도함.
+          const parsedFeedUrl = await this.getRssAddress(`${params.url}`);
 
           if (parsedFeedUrl.statusCode === 200) {
             // S6-3. 파싱한 RSS 주소를 통하여 재시도

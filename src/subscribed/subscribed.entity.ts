@@ -29,6 +29,9 @@ export class Subscribed {
   @IsString()
   feedUrl: string;
 
+  @Column({ nullable: true })
+  profileImageUrl: string | null;
+
   @Column()
   @IsString()
   serviceOn: string;
