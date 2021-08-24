@@ -27,7 +27,7 @@ export class User {
   @IsString()
   username: string;
 
-  @Column()
+  @Column({ nullable: true })
   @IsString()
   profileImage: string;
 

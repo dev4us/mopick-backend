@@ -6,9 +6,6 @@ import { GetPostsRequestDto, GetPostsResponseDto } from './dto/getPosts.dto';
 
 @Injectable()
 export class PostService {
-  constructor() // @InjectRepository(Subscribed)
-  // private readonly subscribeds: Repository<Subscribed>,
-  {}
   async getPosts(params: GetPostsRequestDto): Promise<GetPostsResponseDto> {
     console.log('d', params.loggedUser, params);
     const allSubscribed = await getConnection()
