@@ -11,11 +11,6 @@ export class registerRequestDto {
 export class getRssAddressResponseDto extends commonResponseDto {
   feedUrl: string;
 }
-
-export class getProfileAddressResponseDto extends commonResponseDto {
-  profileUrl: string | null;
-}
-
 export class parsingRSSResponseDto extends commonResponseDto {
   data?: {
     title: string;

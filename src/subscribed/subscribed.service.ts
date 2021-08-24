@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { commonResponseDto } from 'src/common/common.dto';
 import { getConnection, Repository } from 'typeorm';
 import {
-  getProfileAddressResponseDto,
   getRssAddressResponseDto,
   parsingRSSResponseDto,
   registerRequestDto,
@@ -105,8 +104,6 @@ export class SubscribedService {
       } else if (parsingRSS && parsingRSS.statusCode == 400) {
         // S1. 브런치
         if (params.url.toLowerCase().includes('brunch.co.kr')) {
-          let parsedFeedUrl;
-
           // S1-1. 최상위 경로로 이동하여야 함.
           const brunchUniqueId = params.url
             .split('brunch.co.kr/')
@@ -114,7 +111,7 @@ export class SubscribedService {
             .split('/')[0];
 
           // S1-2. 최상위 경로로 이동 후 다시 한번 파싱을 시도함
-          parsedFeedUrl = await this.getRssAddress(
+          const parsedFeedUrl = await this.getRssAddress(
             `https://brunch.co.kr/${brunchUniqueId}`,
           );
 
@@ -148,11 +145,10 @@ export class SubscribedService {
         ) {
           // S3. 네이버 블로그 (아이디가 쿼리스트링으로 존재하는 경우)
           // S3-ex. 최신 추천 글, 연관 포스트 등으로 접근한 경우
-          let parsedFeedUrl;
           const querys = queryString.parse(params.url);
 
           if (querys.blogId) {
-            parsedFeedUrl = await this.getRssAddress(
+            const parsedFeedUrl = await this.getRssAddress(
               `https://blog.naver.com/${querys.blogId}`,
             );
 
@@ -170,13 +166,12 @@ export class SubscribedService {
         } else if (params.url.toLowerCase().includes('m.blog.naver.com')) {
           // S4. 네이버 모바일 블로그
           // S4-1. RSS 파싱이 불가능해 데스크탑 버전으로부터 파싱
-          let parsedFeedUrl;
           const mobileNaverUniqueId = params.url
             .split('m.blog.naver.com/')
             .reverse()[0]
             .split('/')[0];
 
-          parsedFeedUrl = await this.getRssAddress(
+          const parsedFeedUrl = await this.getRssAddress(
             `https://blog.naver.com/${mobileNaverUniqueId}`,
           );
 
@@ -193,13 +188,12 @@ export class SubscribedService {
         } else if (params.url.toLowerCase().includes('blog.naver.com')) {
           // S5. 네이버 블로그
           // S5-1. 고유 아이디 파싱 후 데스크탑 버전에서 파싱
-          let parsedFeedUrl;
           const naverUniqueId = params.url
             .split('blog.naver.com/')
             .reverse()[0]
             .split('/')[0];
 
-          parsedFeedUrl = await this.getRssAddress(
+          const parsedFeedUrl = await this.getRssAddress(
             `https://blog.naver.com/${naverUniqueId}`,
           );
 
@@ -215,8 +209,6 @@ export class SubscribedService {
           }
         } else if (params.url.toLowerCase().includes('medium.com')) {
           // S6. 미디움
-          let parsedFeedUrl;
-
           // S6-1. 최상위 경로로 이동하여야 함.
           const mediumUniqueId = params.url
             .split('medium.com/')
@@ -224,7 +216,7 @@ export class SubscribedService {
             .split('/')[0];
 
           // S6-2. 최상위 경로로 이동 후 다시 한번 파싱을 시도함
-          parsedFeedUrl = await this.getRssAddress(
+          const parsedFeedUrl = await this.getRssAddress(
             `https://medium.com/${mediumUniqueId}`,
           );
 
