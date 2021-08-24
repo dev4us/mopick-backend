@@ -26,7 +26,7 @@ export class SubscribedService {
   ) {}
 
   async getRssAddress(url: string): Promise<getRssAddressResponseDto> {
-    const res = await request({ url, rejectUnauthorized: false }).then(
+    const res = await request({ uri: url, rejectUnauthorized: false }).then(
       async (html) => {
         const $ = await cheerio.load(html);
         const isAbleSubscribe = $("link[type*='application/rss']").length;
@@ -55,7 +55,8 @@ export class SubscribedService {
             error: "couldn't Found RSS Address",
           };
         }
-      });
+      },
+    );
 
     return res;
   }

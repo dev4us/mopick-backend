@@ -7,5 +7,9 @@ export class GetPostsRequestDto {
 }
 
 export class GetPostsResponseDto extends commonResponseDto {
-  posts: Post[];
+  posts?: Post[];
+}
+
+export class GetThumbnailAfterParsingResponseDto extends commonResponseDto {
+  thumbnail?: string | null;
 }

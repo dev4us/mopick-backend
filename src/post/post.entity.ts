@@ -32,6 +32,10 @@ export class Post {
   @IsDate()
   writtenDate: Date;
 
+  @Column({ unique: true })
+  @IsString()
+  postURL: string;
+
   @CreateDateColumn()
   @IsDate()
   createdAt: Date;
