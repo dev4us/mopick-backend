@@ -26,33 +26,36 @@ export class SubscribedService {
   ) {}
 
   async getRssAddress(url: string): Promise<getRssAddressResponseDto> {
-    const res = await request(url).then(async (html) => {
-      const $ = await cheerio.load(html);
-      const isAbleSubscribe = $("link[type*='application/rss']").length;
-      const isAbleSubscribeXml = $("link[type*='application/rss+xml']").length;
+    const res = await request({ url, rejectUnauthorized: false }).then(
+      async (html) => {
+        const $ = await cheerio.load(html);
+        const isAbleSubscribe = $("link[type*='application/rss']").length;
+        const isAbleSubscribeXml = $(
+          "link[type*='application/rss+xml']",
+        ).length;
 
-      if (isAbleSubscribe > 0 || isAbleSubscribeXml > 0) {
-        let feedUrl;
+        if (isAbleSubscribe > 0 || isAbleSubscribeXml > 0) {
+          let feedUrl;
 
-        if (isAbleSubscribe > 0) {
-          feedUrl = $("link[type*='application/rss']")[0].attribs.href;
+          if (isAbleSubscribe > 0) {
+            feedUrl = $("link[type*='application/rss']")[0].attribs.href;
+          } else {
+            feedUrl = $("link[type*='application/rss+xml']")[0].attribs.href;
+          }
+
+          return {
+            statusCode: 200,
+            message: 'RSS 주소를 성공적으로 발견하였습니다.',
+            feedUrl,
+          };
         } else {
-          feedUrl = $("link[type*='application/rss+xml']")[0].attribs.href;
+          return {
+            statusCode: 500,
+            message: 'RSS 주소를 발견하지 못하였습니다.',
+            error: "couldn't Found RSS Address",
+          };
         }
-
-        return {
-          statusCode: 200,
-          message: 'RSS 주소를 성공적으로 발견하였습니다.',
-          feedUrl,
-        };
-      } else {
-        return {
-          statusCode: 500,
-          message: 'RSS 주소를 발견하지 못하였습니다.',
-          error: "couldn't Found RSS Address",
-        };
-      }
-    });
+      });
 
     return res;
   }
