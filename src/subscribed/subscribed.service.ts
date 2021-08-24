@@ -61,7 +61,7 @@ export class SubscribedService {
   async parsingRSS({ url, serviceOn }): Promise<parsingRSSResponseDto> {
     try {
       const parser = new rssReader();
-      const rssData = await parser.parseURL(url);
+      const rssData = await parser.parseURL(url.replace('https://', 'http://'));
 
       return {
         statusCode: 200,

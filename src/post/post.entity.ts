@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -26,7 +26,7 @@ export class Post {
   @IsString()
   description: string;
 
-  @OneToMany((type) => Subscribed, (subscribed) => subscribed.posts)
+  @ManyToOne((type) => Subscribed, (subscribed) => subscribed.posts)
   subscribed: Subscribed;
 
   @IsDate()
