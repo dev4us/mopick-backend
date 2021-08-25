@@ -1,4 +1,4 @@
-import { IsDate, IsString } from 'class-validator';
+import { IsDate, IsNumber, IsString } from 'class-validator';
 import { Post } from 'src/post/post.entity';
 import { User } from 'src/user/user.entity';
 import {
@@ -37,12 +37,16 @@ export class Subscribed {
   @Column({ nullable: true })
   serviceOn: string | null;
 
-  @OneToMany((type) => Post, (post) => post.subscribed, { eager: true })
+  @OneToMany((type) => Post, (post) => post.subscribed)
   posts: Post[];
 
   @ManyToMany((type) => User, { eager: true })
   @JoinTable()
   followers: User[];
+
+  @Column({ default: 0 })
+  @IsNumber()
+  renewalTime: number;
 
   @CreateDateColumn()
   @IsDate()

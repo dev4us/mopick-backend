@@ -12,7 +12,8 @@ export class PostController {
 
   @Get('/getPosts')
   @UseGuards(AuthGuard)
-  async login(@LoggedUser() loggedUser: User): Promise<GetPostsResponseDto> {
+  // : Promise<GetPostsResponseDto>
+  async login(@LoggedUser() loggedUser: User) {
     return this.postService.getPosts({ loggedUser });
   }
 }

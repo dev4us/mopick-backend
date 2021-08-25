@@ -26,15 +26,18 @@ export class Post {
   @IsString()
   description: string;
 
-  @ManyToOne((type) => Subscribed, (subscribed) => subscribed.posts)
+  @ManyToOne((type) => Subscribed, (subscribed) => subscribed.posts, {
+    eager: true,
+  })
   subscribed: Subscribed;
 
+  @Column()
   @IsDate()
   writtenDate: Date;
 
   @Column({ unique: true })
   @IsString()
-  postURL: string;
+  postUrl: string;
 
   @CreateDateColumn()
   @IsDate()
